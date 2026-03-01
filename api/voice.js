@@ -187,6 +187,20 @@ function getAvailableCommands() {
     return commands;
 }
 
+// Валидация
+function validateVoiceAction(action) {
+    const validActions = ['processCommand', 'getCommands'];
+    if (!action) return { valid: false, error: 'action is required' };
+    if (!validActions.includes(action)) return { valid: false, error: 'invalid action' };
+    return { valid: true };
+}
+
+function validateText(text) {
+    if (!text || typeof text !== 'string') return { valid: false, error: 'text is required and must be string' };
+    if (text.length > 500) return { valid: false, error: 'text too long (max 500 characters)' };
+    return { valid: true };
+}
+
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -200,19 +214,33 @@ export default async function handler(req, res) {
     try {
         const { action, text } = req.method === 'GET' ? req.query : req.body;
         
+        // Валидация action
+        const actionValidation = validateVoiceAction(action);
+        if (!actionValidation.valid) {
+            return res.status(400).json({ success: false, error: actionValidation.error });
+        }
+        
         switch (action) {
             case 'processCommand':
+                const textValidation = validateText(text);
+                if (!textValidation.valid) {
+                    return res.status(400).json({ success: false, error: textValidation.error });
+                }
                 return handleProcessCommand(res, text);
             
             case 'getCommands':
                 return handleGetCommands(res);
             
             default:
-                return res.status(400).json({ error: 'Invalid action' });
+                return res.status(400).json({ success: false, error: 'Invalid action' });
         }
     } catch (error) {
         console.error('Voice API Error:', error);
-        return res.status(500).json({ error: 'Internal server error', message: error.message });
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Internal server error', 
+            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred'
+        });
     }
 }
 

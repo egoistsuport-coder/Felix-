@@ -210,6 +210,34 @@ function updateDailyTask(userId, taskId, increment = 1) {
     return { completed: false };
 }
 
+// Валидация входных данных
+function validateUserId(userId) {
+    if (!userId) return { valid: false, error: 'userId is required' };
+    if (typeof userId !== 'string' && typeof userId !== 'number') return { valid: false, error: 'userId must be string or number' };
+    return { valid: true };
+}
+
+function validateAction(action) {
+    const validActions = ['getUserProgress', 'addXP', 'updateActivity', 'getAchievements', 'getDailyTasks', 'updateDailyTask', 'getCourseProgress', 'updateCourseProgress', 'getLeaderboard', 'getAnalytics'];
+    if (!action) return { valid: false, error: 'action is required' };
+    if (!validActions.includes(action)) return { valid: false, error: 'invalid action' };
+    return { valid: true };
+}
+
+function validateXPData(data) {
+    if (!data) return { valid: false, error: 'data is required' };
+    if (typeof data.amount !== 'number' || data.amount < 0) return { valid: false, error: 'amount must be positive number' };
+    if (!data.reason || typeof data.reason !== 'string') return { valid: false, error: 'reason is required' };
+    return { valid: true };
+}
+
+function validateActivityData(data) {
+    if (!data) return { valid: false, error: 'data is required' };
+    const validTypes = ['message', 'command', 'lesson'];
+    if (!validTypes.includes(data.type)) return { valid: false, error: 'invalid activity type' };
+    return { valid: true };
+}
+
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -223,8 +251,18 @@ export default async function handler(req, res) {
     try {
         const { action, userId, data } = req.method === 'GET' ? { ...req.query, data: null } : req.body;
         
-        if (!userId) {
-            return res.status(400).json({ error: 'userId is required' });
+        // Валидация action
+        const actionValidation = validateAction(action);
+        if (!actionValidation.valid) {
+            return res.status(400).json({ success: false, error: actionValidation.error });
+        }
+        
+        // Валидация userId (кроме getLeaderboard)
+        if (action !== 'getLeaderboard') {
+            const userIdValidation = validateUserId(userId);
+            if (!userIdValidation.valid) {
+                return res.status(400).json({ success: false, error: userIdValidation.error });
+            }
         }
 
         switch (action) {
@@ -232,9 +270,17 @@ export default async function handler(req, res) {
                 return handleGetUserProgress(res, userId);
             
             case 'addXP':
+                const xpValidation = validateXPData(data);
+                if (!xpValidation.valid) {
+                    return res.status(400).json({ success: false, error: xpValidation.error });
+                }
                 return handleAddXP(res, userId, data);
             
             case 'updateActivity':
+                const activityValidation = validateActivityData(data);
+                if (!activityValidation.valid) {
+                    return res.status(400).json({ success: false, error: activityValidation.error });
+                }
                 return handleUpdateActivity(res, userId, data);
             
             case 'getAchievements':
@@ -263,7 +309,11 @@ export default async function handler(req, res) {
         }
     } catch (error) {
         console.error('Learning API Error:', error);
-        return res.status(500).json({ error: 'Internal server error', message: error.message });
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Internal server error', 
+            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred'
+        });
     }
 }
 
