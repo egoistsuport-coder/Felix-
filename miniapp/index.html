@@ -41,7 +41,6 @@
             flex-direction: column;
         }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             padding: 24px 20px;
@@ -76,7 +75,6 @@
             opacity: 0.9;
         }
 
-        /* Navigation */
         .nav-tabs {
             display: flex;
             background: var(--bg-secondary);
@@ -111,7 +109,6 @@
             color: white;
         }
 
-        /* Content */
         .content {
             flex: 1;
             padding: 20px;
@@ -128,7 +125,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Cards */
         .card {
             background: var(--bg-card);
             border-radius: 16px;
@@ -146,78 +142,41 @@
             gap: 8px;
         }
 
-        /* Messages */
-        .messages-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .message {
-            padding: 16px;
-            border-radius: 16px;
-            animation: slideIn 0.3s;
-            max-width: 85%;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .message.user {
-            background: var(--primary);
-            align-self: flex-end;
-            margin-left: auto;
-        }
-
-        .message.assistant {
+        .feature-card {
             background: var(--bg-secondary);
-            align-self: flex-start;
-            border: 1px solid var(--border);
-        }
-
-        .message-content {
-            line-height: 1.6;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-
-        .message-time {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 8px;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: var(--bg-secondary);
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 16px;
-            text-align: center;
+            margin-bottom: 16px;
             border: 1px solid var(--border);
         }
 
-        .stat-value {
+        .feature-icon {
             font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-size: 18px;
             font-weight: 700;
-            color: var(--primary);
             margin-bottom: 8px;
         }
 
-        .stat-label {
-            font-size: 13px;
+        .feature-desc {
             color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
         }
 
-        /* Buttons */
+        .code-block {
+            background: var(--bg-primary);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
         .btn {
             width: 100%;
             padding: 16px;
@@ -249,34 +208,14 @@
             border: 1px solid var(--border);
         }
 
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
         .btn + .btn {
             margin-top: 12px;
         }
 
-        /* Loading & Empty States */
-        .loading, .empty {
+        .empty {
             text-align: center;
             padding: 60px 20px;
             color: var(--text-secondary);
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .empty-icon {
@@ -284,7 +223,6 @@
             margin-bottom: 16px;
         }
 
-        /* Settings */
         .setting-item {
             display: flex;
             justify-content: space-between;
@@ -331,7 +269,6 @@
             left: 26px;
         }
 
-        /* Info Card */
         .info-card {
             background: var(--bg-secondary);
             border-radius: 12px;
@@ -360,46 +297,18 @@
             font-size: 14px;
         }
 
-        /* Feature Card */
-        .feature-card {
-            background: var(--bg-secondary);
+        .success-message {
+            background: var(--success);
+            color: white;
+            padding: 16px;
             border-radius: 12px;
-            padding: 20px;
             margin-bottom: 16px;
-            border: 1px solid var(--border);
-        }
-
-        .feature-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
-
-        .feature-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .feature-desc {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 16px;
-        }
-
-        .code-block {
-            background: var(--bg-primary);
-            padding: 12px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            overflow-x: auto;
-            margin: 12px 0;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <div class="header">
             <div class="header-content">
                 <div class="header-icon">🤖</div>
@@ -410,31 +319,38 @@
             </div>
         </div>
 
-        <!-- Navigation -->
         <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="history">📜 История</button>
-            <button class="nav-tab" data-tab="stats">📊 Статистика</button>
+            <button class="nav-tab active" data-tab="welcome">🏠 Главная</button>
             <button class="nav-tab" data-tab="features">✨ Функции</button>
             <button class="nav-tab" data-tab="settings">⚙️ Настройки</button>
         </div>
 
-        <!-- History Tab -->
-        <div id="history" class="content active">
-            <div id="historyContent">
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Загрузка истории...</p>
+        <!-- Welcome Tab -->
+        <div id="welcome" class="content active">
+            <div class="success-message">
+                ✅ Бот работает! Все функции активны
+            </div>
+
+            <div class="card">
+                <div class="card-title">🎯 Что умеет Felix</div>
+                <div style="line-height: 1.8;">
+                    <p>✅ <strong>Голосовые сообщения</strong> - распознавание через Whisper</p>
+                    <p>✅ <strong>Организация текста</strong> - команда /organize</p>
+                    <p>✅ <strong>Контекстная память</strong> - помнит диалог</p>
+                    <p>✅ <strong>AI ответы</strong> - LLaMA 3.3 70B</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Stats Tab -->
-        <div id="stats" class="content">
-            <div id="statsContent">
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Загрузка статистики...</p>
+            <div class="card">
+                <div class="card-title">🚀 Быстрый старт</div>
+                <div style="color: var(--text-secondary); line-height: 1.6;">
+                    <p style="margin-bottom: 12px;">1. Напишите боту любое сообщение</p>
+                    <p style="margin-bottom: 12px;">2. Отправьте голосовое сообщение</p>
+                    <p style="margin-bottom: 12px;">3. Используйте /organize для структурирования текста</p>
                 </div>
+                <button class="btn btn-primary" onclick="openBot()" style="margin-top: 16px;">
+                    Открыть бота
+                </button>
             </div>
         </div>
 
@@ -491,16 +407,6 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-title">🗂 Управление данными</div>
-                <button class="btn btn-secondary" onclick="exportData()">
-                    📥 Экспорт данных
-                </button>
-                <button class="btn btn-danger" onclick="clearHistory()">
-                    🗑 Очистить историю
-                </button>
-            </div>
-
             <div class="info-card">
                 <div class="info-row">
                     <span class="info-label">Версия</span>
@@ -515,8 +421,8 @@
                     <span class="info-value">Whisper Large v3</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">База данных</span>
-                    <span class="info-value">PostgreSQL</span>
+                    <span class="info-label">Статус</span>
+                    <span class="info-value" style="color: var(--success);">✅ Работает</span>
                 </div>
             </div>
 
@@ -527,7 +433,6 @@
     </div>
 
     <script>
-        // Initialize Telegram WebApp
         let tg;
         try {
             tg = window.Telegram.WebApp;
@@ -538,14 +443,6 @@
             console.error('Telegram WebApp init error:', e);
         }
 
-        // Get user data
-        const user = tg?.initDataUnsafe?.user;
-        const userId = user?.id || 'demo';
-        console.log('User ID:', userId);
-
-        // API base URL
-        const API_URL = 'https://felix-black.vercel.app/api';
-
         // Tab switching
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.addEventListener('click', function() {
@@ -555,151 +452,11 @@
         });
 
         function showTab(tabName) {
-            // Update tabs
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
             
-            // Update content
             document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
-            
-            // Load data
-            if (tabName === 'history') loadHistory();
-            if (tabName === 'stats') loadStats();
-        }
-
-        // Load history
-        async function loadHistory() {
-            const container = document.getElementById('historyContent');
-            container.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Загрузка истории...</p>
-                </div>
-            `;
-            
-            try {
-                const response = await fetch(`${API_URL}/history?userId=${userId}`);
-                const data = await response.json();
-                
-                console.log('History data:', data);
-                
-                if (data.ok && data.messages && data.messages.length > 0) {
-                    container.innerHTML = `
-                        <div class="messages-container">
-                            ${data.messages.map(msg => `
-                                <div class="message ${msg.role}">
-                                    <div class="message-content">${escapeHtml(msg.content)}</div>
-                                    <div class="message-time">${formatDate(msg.created_at)}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = `
-                        <div class="empty">
-                            <div class="empty-icon">💬</div>
-                            <p>История диалогов пуста</p>
-                            <p style="margin-top: 8px; font-size: 14px;">Начните общение с ботом</p>
-                            <button class="btn btn-primary" onclick="openBot()" style="margin-top: 20px; max-width: 200px; margin-left: auto; margin-right: auto;">
-                                Открыть бота
-                            </button>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('History load error:', error);
-                container.innerHTML = `
-                    <div class="empty">
-                        <div class="empty-icon">⚠️</div>
-                        <p>Ошибка загрузки истории</p>
-                        <p style="margin-top: 8px; font-size: 14px;">${error.message}</p>
-                        <button class="btn btn-secondary" onclick="loadHistory()" style="margin-top: 20px; max-width: 200px; margin-left: auto; margin-right: auto;">
-                            Повторить
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        // Load stats
-        async function loadStats() {
-            const container = document.getElementById('statsContent');
-            container.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>Загрузка статистики...</p>
-                </div>
-            `;
-            
-            try {
-                const response = await fetch(`${API_URL}/stats?userId=${userId}`);
-                const data = await response.json();
-                
-                console.log('Stats data:', data);
-                
-                container.innerHTML = `
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value">${data.total_messages || 0}</div>
-                            <div class="stat-label">Всего сообщений</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${data.user_messages || 0}</div>
-                            <div class="stat-label">Ваших сообщений</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${data.bot_messages || 0}</div>
-                            <div class="stat-label">Ответов бота</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${data.voice_messages || 0}</div>
-                            <div class="stat-label">Голосовых</div>
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-row">
-                            <span class="info-label">Первое сообщение</span>
-                            <span class="info-value">${data.first_message_at ? formatDate(data.first_message_at) : 'Нет данных'}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Последнее сообщение</span>
-                            <span class="info-value">${data.last_message_at ? formatDate(data.last_message_at) : 'Нет данных'}</span>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Stats load error:', error);
-                container.innerHTML = `
-                    <div class="empty">
-                        <div class="empty-icon">⚠️</div>
-                        <p>Ошибка загрузки статистики</p>
-                        <p style="margin-top: 8px; font-size: 14px;">${error.message}</p>
-                        <button class="btn btn-secondary" onclick="loadStats()" style="margin-top: 20px; max-width: 200px; margin-left: auto; margin-right: auto;">
-                            Повторить
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        // Helper functions
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'Нет данных';
-            const date = new Date(dateString);
-            return date.toLocaleString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
         }
 
         function toggleSetting(element) {
@@ -711,54 +468,6 @@
                 tg.close();
             } else {
                 window.open('https://t.me/fel12x_bot', '_blank');
-            }
-        }
-
-        async function exportData() {
-            if (tg && tg.showPopup) {
-                tg.showPopup({
-                    title: 'Экспорт данных',
-                    message: 'Выберите формат экспорта',
-                    buttons: [
-                        {id: 'txt', type: 'default', text: 'TXT'},
-                        {id: 'json', type: 'default', text: 'JSON'},
-                        {type: 'cancel'}
-                    ]
-                }, (buttonId) => {
-                    if (buttonId && buttonId !== 'cancel') {
-                        tg.showAlert('Экспорт будет доступен в следующей версии');
-                    }
-                });
-            } else {
-                alert('Экспорт будет доступен в следующей версии');
-            }
-        }
-
-        async function clearHistory() {
-            const confirmed = tg && tg.showConfirm 
-                ? await new Promise(resolve => {
-                    tg.showConfirm('Вы уверены что хотите очистить всю историю?', resolve);
-                })
-                : confirm('Вы уверены что хотите очистить всю историю?');
-            
-            if (confirmed) {
-                try {
-                    await fetch(`${API_URL}/clear?userId=${userId}`, { method: 'POST' });
-                    if (tg && tg.showAlert) {
-                        tg.showAlert('История очищена');
-                    } else {
-                        alert('История очищена');
-                    }
-                    loadHistory();
-                    loadStats();
-                } catch (error) {
-                    console.error('Clear error:', error);
-                    if (tg && tg.showAlert) {
-                        tg.showAlert('Ошибка при очистке');
-                    } else {
-                        alert('Ошибка при очистке');
-                    }
-                }
             }
         }
 
@@ -783,9 +492,7 @@
             }
         }
 
-        // Load initial data
-        console.log('Loading initial data...');
-        loadHistory();
+        console.log('Felix Mini App loaded successfully');
     </script>
 </body>
 </html>
