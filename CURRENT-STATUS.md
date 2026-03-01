@@ -1,200 +1,84 @@
-# Felix Bot - Текущий статус
+# 🔴 КРИТИЧЕСКАЯ ПРОБЛЕМА: БОТ НЕ РАБОТАЕТ
 
-## ✅ Что работает СЕЙЧАС
+## Проблема
+Бот возвращает 404 ошибки при попытке обработать webhook от Telegram.
 
-### 1. Базовый функционал
-- ✅ Telegram бот [@fel12x_bot](https://t.me/fel12x_bot) запущен
-- ✅ Webhook настроен: https://felix-black.vercel.app/api/webhook
-- ✅ AI-ответы через Groq LLaMA 3.3 70B
-- ✅ Автоматический деплой на Vercel при push в GitHub
+**Ошибка:** "Wrong response from the webhook: 404 Not Found"
 
-### 2. Команды бота
-- ✅ `/start` - приветствие и главное меню
-- ✅ Текстовые сообщения - AI отвечает
+## Причина найдена
+`vercel.json` был настроен на Python маршруты (`/api/telegram/webhook.py`), но фактический webhook - это JavaScript файл `api/webhook.js`.
 
-### 3. Инфраструктура
-- ✅ GitHub репозиторий: https://github.com/egoistsuport-coder/Felix-
-- ✅ Vercel деплой: https://felix-black.vercel.app
-- ✅ Groq API подключен
-- ✅ Telegram Bot API работает
+## Исправление выполнено
 
----
-
-## 🚧 Что НЕ работает (но код готов)
-
-### База данных
-- ❌ PostgreSQL таблицы не созданы
-- ❌ История диалогов не сохраняется
-- ❌ Контекст не работает (бот не помнит предыдущие сообщения)
-- ❌ Статистика не собирается
-
-### Расширенные функции
-- ❌ Транскрибация голосовых (код есть, но не работает без БД)
-- ❌ Саммари диалогов (код есть, но не работает без БД)
-- ❌ Команды `/clear`, `/stats`, `/summary` (требуют БД)
-- ❌ Кнопки в интерфейсе (требуют БД)
-
----
-
-## 📋 Что нужно сделать для полного запуска
-
-### Шаг 1: Создать таблицы в базе данных
-**Файл:** `database/simple-schema.sql` или `database/production-schema.sql`
-
-**Как:**
-1. Откройте Supabase SQL Editor: https://supabase.com/dashboard/project/kzjkkwfrqymtrgjarsag/sql/new
-2. Скопируйте SQL из файла
-3. Нажмите RUN
-
-**Таблицы:**
-- `users` - пользователи
-- `messages` - сообщения
-- `voice_messages` - голосовые
-- `conversations` - сессии диалогов
-- `user_stats` - статистика
-
-### Шаг 2: Обновить код для работы с БД
-**Файлы готовы:**
-- ✅ `lib/db.js` - функции для работы с БД
-- ✅ `lib/ai.js` - AI функции с контекстом
-- ✅ `lib/telegram.js` - Telegram API
-- ✅ `api/webhook.js` - обработчик с полным функционалом
-
-**Что нужно:**
-1. Добавить `DATABASE_URL` в Vercel Environment Variables (если еще не добавили)
-2. Отправить код на GitHub
-3. Дождаться деплоя
-
-### Шаг 3: Протестировать
-После деплоя проверить:
-- `/start` - должны появиться кнопки
-- Текстовые сообщения - должен помнить контекст
-- Голосовые - должна быть транскрипция
-- `/stats` - должна показаться статистика
-- `/summary` - должно создаться саммари
-
----
-
-## 🎯 Текущая архитектура
-
-```
-┌─────────────────┐
-│  Telegram Bot   │
-│  @fel12x_bot    │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Vercel         │
-│  Serverless     │
-│  webhook.js     │
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-┌────────┐ ┌──────────┐
-│ Groq   │ │ Supabase │
-│ API    │ │ Postgres │
-└────────┘ └──────────┘
-```
-
----
-
-## 📊 Сравнение версий
-
-### Текущая версия (v1.0 - работает)
-```javascript
-// Простой эхо-бот с AI
-- Получает сообщение
-- Отправляет в Groq
-- Возвращает ответ
-- НЕТ контекста
-- НЕТ истории
-```
-
-### Готовая версия (v2.0 - код готов, нужна БД)
-```javascript
-// Полноценный ассистент
-- Получает сообщение
-- Сохраняет в БД
-- Загружает историю (10 последних)
-- Отправляет в Groq с контекстом
-- Сохраняет ответ
-- Возвращает пользователю
-- Обновляет статистику
-```
-
----
-
-## 🔧 Технические детали
-
-### Переменные окружения в Vercel
-```env
-TELEGRAM_BOT_TOKEN=8623255560:AAE7sC-7-eWA5LD-ebATDUh6nGUG0pYm03U
-GROQ_API_KEY=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
-DATABASE_URL=postgresql://postgres:JIr5iPt2l5bMJH8YipvNEyPX@db.kzjkkwfrqymtrgjarsag.supabase.co:5432/postgres
-```
-
-### Зависимости (package.json)
+### 1. Обновлен vercel.json
 ```json
 {
-  "groq-sdk": "^0.3.0",  // ✅ Установлено
-  "pg": "^8.11.3"        // ✅ Установлено
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/webhook",
+      "destination": "/api/webhook"
+    }
+  ]
 }
 ```
 
-### Файловая структура
-```
-/
-├── api/
-│   └── webhook.js          ✅ Готов (с БД функционалом)
-├── lib/
-│   ├── ai.js              ✅ Готов
-│   ├── db.js              ✅ Готов
-│   └── telegram.js        ✅ Готов
-├── database/
-│   ├── simple-schema.sql  ✅ Готов
-│   └── production-schema.sql ✅ Готов
-├── index.html             ✅ Готов
-├── package.json           ✅ Готов
-└── vercel.json            ✅ Готов
+### 2. Упрощен api/webhook.js
+- Убраны внешние функции (все inline)
+- Убраны зависимости от базы данных
+- Минимальный рабочий код для тестирования
+
+## Следующие шаги
+
+### Шаг 1: Деплой исправлений
+```bash
+git add .
+git commit -m "Fix: Update vercel.json for JavaScript webhook routing"
+git push origin main
 ```
 
----
+### Шаг 2: Проверить деплой
+Дождаться автоматического деплоя на Vercel (1-2 минуты)
 
-## 🚀 Следующие шаги
+### Шаг 3: Проверить webhook
+```powershell
+# Проверить статус webhook
+Invoke-RestMethod -Uri "https://api.telegram.org/bot8623255560:AAE7sC-7-eWA5LD-ebATDUh6nGUG0pYm03U/getWebhookInfo" | ConvertTo-Json -Depth 10
 
-### Вариант 1: Быстрый запуск (5 минут)
-1. Создать таблицы в Supabase (`simple-schema.sql`)
-2. Добавить `DATABASE_URL` в Vercel
-3. Push код на GitHub
-4. Готово!
+# Если нужно, обновить webhook URL
+Invoke-RestMethod -Uri "https://api.telegram.org/bot8623255560:AAE7sC-7-eWA5LD-ebATDUh6nGUG0pYm03U/setWebhook" -Method Post -Body @{url="https://felix-black.vercel.app/api/webhook"}
+```
 
-### Вариант 2: Production (15 минут)
-1. Создать полную БД (`production-schema.sql`)
-2. Добавить все переменные окружения
-3. Настроить мониторинг
-4. Протестировать все функции
-5. Готово!
+### Шаг 4: Протестировать бота
+Отправить сообщение боту @fel12x_bot
 
 ---
 
-## 💡 Рекомендация
+## Что работает
+- ✅ GitHub репозиторий: https://github.com/egoistsuport-coder/Felix-
+- ✅ Vercel проект подключен
+- ✅ База данных Supabase настроена
+- ✅ Все переменные окружения добавлены в Vercel
+- ✅ Код исправлен
 
-**Начните с Варианта 1** - быстрый запуск с базовым функционалом:
-- История диалогов
-- Контекст (последние 10 сообщений)
-- Базовая статистика
-
-Потом можно добавить:
-- Транскрибацию голосовых
-- Саммари
-- Расширенную аналитику
-- Rate limiting
-- И т.д.
+## Что НЕ работает (пока)
+- ❌ Webhook возвращает 404 (исправление готово к деплою)
+- ❌ Бот не отвечает на сообщения (будет работать после деплоя)
 
 ---
 
-## ❓ Вопросы?
+## Технические детали
 
-Готовы создавать таблицы в БД и запускать полную версию?
+### Текущая конфигурация
+- **Webhook URL**: https://felix-black.vercel.app/api/webhook
+- **Bot**: @fel12x_bot
+- **Vercel Project**: https://vercel.com/egoistsuport-coders-projects/felix
+
+### Файлы изменены
+1. `vercel.json` - исправлена маршрутизация
+2. `api/webhook.js` - упрощен код
+
+### Что делает бот (после деплоя)
+- Отвечает на `/start` с приветствием и кнопкой Mini App
+- Отвечает на текстовые сообщения через Groq AI (LLaMA 3.3 70B)
+- Работает без базы данных (пока)
