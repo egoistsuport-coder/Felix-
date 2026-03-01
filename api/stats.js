@@ -1,27 +1,25 @@
+import { db } from '../lib/db.js';
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { userId } = req.query;
+    const { user_id, period } = req.query;
 
-    if (!userId) {
-      return res.status(400).json({ error: 'userId required' });
+    if (!user_id) {
+      return res.status(400).json({ error: 'user_id is required' });
     }
 
-    // Return zeros for now - will work after DB setup
-    return res.status(200).json({
-      ok: true,
-      total_messages: 0,
-      user_messages: 0,
-      bot_messages: 0,
-      voice_messages: 0,
-      first_message_at: null,
-      last_message_at: null
-    });
+    const userId = parseInt(user_id);
+    const statsPeriod = period || 'all';
+
+    const stats = await db.getUserStats(userId, statsPeriod);
+
+    return res.status(200).json(stats);
   } catch (error) {
-    console.error('Stats API error:', error);
+    console.error('Error in stats API:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
